@@ -31,18 +31,26 @@ rcon = [0x01000000, 0x02000000, 0x04000000, 0x08000000,
         0x1b000000, 0x36000000]
 
 # circular byte left shift by 1
+
+
 def rot_word(word):
     return ((word << 8) | (word >> 24)) & 0xffffffff
 
 # substitute bytes from the s-box
+
+
 def sub_word(index):
     return sbox[index]
 
 # xor two words
+
+
 def xor_word(word1, word2):
     return word1 ^ word2
 
 # g() function
+
+
 def g(word, rconst):
     """
     word: 32-bit word
@@ -68,7 +76,7 @@ def g(word, rconst):
     # xor with rconst
     word = xor_word(word, rconst)
     return word
-    
+
 
 # generate the key schedule
 def key_schedule(key):
@@ -94,6 +102,8 @@ def key_schedule(key):
     return w
 
 # round key
+
+
 def get_round_key(key_to_expand):
     """
     key_to_expand: 128-bit key
@@ -117,7 +127,8 @@ def get_round_key(key_to_expand):
 
     return round_key
 
-round_wise_key = get_round_key(0x5468617473206d79204b756e67204675)
+
+# round_wise_key = get_round_key(0x5468617473206d79204b756e67204675)
 
 # test round key
 # print the round wise key in hex (2 hex digit then space)
@@ -129,5 +140,3 @@ round_wise_key = get_round_key(0x5468617473206d79204b756e67204675)
 
 #     hex_string = hex_string[0:2] + " " + hex_string[2:4] + " " + hex_string[4:6] + " " + hex_string[6:8] + " " + hex_string[8:10] + " " + hex_string[10:12] + " " + hex_string[12:14] + " " + hex_string[14:16] + " " + hex_string[16:18] + " " + hex_string[18:20] + " " + hex_string[20:22] + " " + hex_string[22:24] + " " + hex_string[24:26] + " " + hex_string[26:28] + " " + hex_string[28:30] + " " + hex_string[30:32]
 #     print("Round: ", i , "\tkey: ", hex_string)
-
-

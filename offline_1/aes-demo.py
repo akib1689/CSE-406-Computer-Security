@@ -1,3 +1,6 @@
+# time module
+import time
+
 # import the encryption module
 from encrypt import encrypt, decrypt
 
@@ -21,27 +24,27 @@ print("key:")
 print("\tin ascii:", key)
 print("\tin hex:", hex(key_bytes))
 
+# start the timer here
+current_time = time.time_ns()
+
 # check of the key is 128 bits
 # if not, pad it with 0s or truncate it
 if len(key) > 16:
-    print("key is too long, truncating to 128 bits")
     key_bytes = key_bytes & 0xffffffffffffffffffffffffffffffff
 elif len(key) < 16:
-    print("key is too short, padding with 0s")
     key_bytes = key_bytes << (16 - len(key)) * 8
+
 
 # check of the text is 128 bits
 # if not, pad it with 0s
 # or divide it into blocks last block is padded with 0s
 text_blocks = []
 if len(text) > 16:
-    print("text is too long, dividing into blocks")
     while len(text) > 16:
         text_blocks.append(text[:16])
         text = text[16:]
     text_blocks.append(text)
 elif len(text) < 16:
-    print("text is too short, padding with 0s")
     text_bytes = text_bytes << (16 - len(text)) * 8
     text = text + "\x00" * (16 - len(text))
     text_blocks.append(text)
@@ -57,10 +60,12 @@ for block in text_blocks:
     block_bytes = int(block.encode("ascii").hex(), 16)
     # encrypt the block
     cipher = encrypt(block_bytes, key_bytes)
-    # print("test")
     # # append the cipher to the ciphertext
     ciphertext.append(cipher)
 
+# stop the timer here
+current_time = time.time_ns() - current_time        # in nanoseconds
+encryption_time = current_time / 1000000            # in milliseconds
 
 # print the ciphertext
 print("ciphertext:")
@@ -74,6 +79,8 @@ for cipher in ciphertext:
     print("\tin ascii:", cipher_text)
 
 
+# start the timer here
+current_time = time.time_ns()
 # decrypt each block
 plaintext_block = []
 for cipher in ciphertext:
@@ -96,10 +103,15 @@ for plain in plaintext_block:
         plaintext_int <<= 8
         plaintext_int += ord(plaintext[0])
 
-# convert the plaintext to ascii
-
+# stop the timer here
+current_time = time.time_ns() - current_time        # in nanoseconds
+decryption_time = current_time / 1000000            # in milliseconds
 
 # print the plaintext
 print("plaintext:")
 print("\tin ascii:", plaintext)
 print("\tin hex:", hex(plaintext_int))
+
+# print the time taken
+print("encryption time:", encryption_time, "ms")
+print("decryption time:", decryption_time, "ms")
