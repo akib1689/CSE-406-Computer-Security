@@ -14,6 +14,9 @@ from BitVector import *
 # s-box
 from s_box import *
 
+# time
+import time
+
 # fixed column matrix for mix columns
 mix_matrix = [[0x02, 0x03, 0x01, 0x01],
               [0x01, 0x02, 0x03, 0x01],
@@ -256,7 +259,12 @@ def encrypt(text, key):
     key: 128-bit key
     """
     state = make_state(text)  # 4x4 state matrix
+    # start the timer here
+    curret_time = time.time_ns()
     round_keys = get_round_key(key)  # 11 round keys
+    # stop the timer here
+    curret_time = time.time_ns() - curret_time
+    key_expansion_time = curret_time / 1000000  # in milliseconds
     for i in range(11):
         round_key = round_keys[i]
         round_key = make_state(round_key)
@@ -278,7 +286,7 @@ def encrypt(text, key):
             ciphertext |= state[j][i]
 
     # print("Ciphertext:", hex(ciphertext))
-    return ciphertext
+    return ciphertext, key_expansion_time
 
 
 def decrypt(cipher, key):

@@ -5,24 +5,24 @@ import time
 from encrypt import encrypt, decrypt
 
 # take the input from the user as ascii text
-text = input("Enter the text to encrypt: ")
+text = input()
 # convert the text to integer
 text_bytes = int(text.encode("ascii").hex(), 16)
 
 # take the key from the user as ascii text
-key = input("Enter the key: ")
+key = input()
 # convert the key to integer
 key_bytes = int(key.encode("ascii").hex(), 16)
 
 # print the text as hex and in ascii
 print("plain text:")
-print("\tin ascii:", text)
-print("\tin hex:", hex(text_bytes))
+print("\tin Hex:", hex(text_bytes))
+print("\tin ASCII:", text)
 
 # print the key as hex and in ascii
 print("key:")
-print("\tin ascii:", key)
-print("\tin hex:", hex(key_bytes))
+print("\tin Hex:", hex(key_bytes))
+print("\tin ASCII:", key)
 
 # start the timer here
 current_time = time.time_ns()
@@ -54,12 +54,12 @@ else:
 # print("blocks:", text_blocks)
 # encrypt each block
 ciphertext = []
-
+key_expansion_time = 0
 for block in text_blocks:
     # convert the block to integer
     block_bytes = int(block.encode("ascii").hex(), 16)
     # encrypt the block
-    cipher = encrypt(block_bytes, key_bytes)
+    cipher, key_expansion_time = encrypt(block_bytes, key_bytes)
     # # append the cipher to the ciphertext
     ciphertext.append(cipher)
 
@@ -67,16 +67,23 @@ for block in text_blocks:
 current_time = time.time_ns() - current_time        # in nanoseconds
 encryption_time = current_time / 1000000            # in milliseconds
 
-# print the ciphertext
-print("ciphertext:")
+# concatenate the ciphertext blocks
+ciphertext_int = 0
+# reverse the ciphertext blocks
+ciphertext.reverse()
 for cipher in ciphertext:
-    print("\tin hex:", hex(cipher))
-    # take the 2 hex digits at a time and convert them to ascii
-    cipher_text = ""
-    while cipher > 0:
-        cipher_text = chr(cipher & 0xff) + cipher_text
-        cipher >>= 8
-    print("\tin ascii:", cipher_text)
+    ciphertext_int <<= 128
+    ciphertext_int += cipher
+
+# print the ciphertext as hex and in ascii
+print("Ciphertext:")
+print("\tin Hex:", hex(ciphertext_int))
+# take the 2 hex digits at a time and convert them to ascii
+cipher_text_ascii = ""
+while ciphertext_int > 0:
+    cipher_text_ascii = chr(ciphertext_int & 0xff) + cipher_text_ascii
+    ciphertext_int >>= 8
+print("\tin ASCII:", cipher_text_ascii)
 
 
 # start the timer here
@@ -91,27 +98,27 @@ for cipher in ciphertext:
 
 # concatenate the plaintext blocks
 plaintext = ""
-plaintext_int = 0
-# reverse the plaintext blocks
-plaintext_block.reverse()
 for plain in plaintext_block:
     # take the 2 hex digits at a time and convert them to ascii
     # also keep the values in a integer
     while plain > 0:
         plaintext = chr(plain & 0xff) + plaintext
         plain >>= 8
-        plaintext_int <<= 8
-        plaintext_int += ord(plaintext[0])
+
+# reverse the plaintext_int to get the original value taking 2 hex digits at a time
+plaintext_int = int(plaintext.encode("ascii").hex(), 16)
+
 
 # stop the timer here
 current_time = time.time_ns() - current_time        # in nanoseconds
 decryption_time = current_time / 1000000            # in milliseconds
 
 # print the plaintext
-print("plaintext:")
-print("\tin ascii:", plaintext)
-print("\tin hex:", hex(plaintext_int))
+print("Deciphered Text:")
+print("\tin Hex:", hex(plaintext_int))
+print("\tin ASCII:", plaintext)
 
 # print the time taken
-print("encryption time:", encryption_time, "ms")
-print("decryption time:", decryption_time, "ms")
+print("Key Expansiton time", key_expansion_time, "ms")
+print("Encryption Time", encryption_time, "ms")
+print("Decryption Time", decryption_time, "ms")

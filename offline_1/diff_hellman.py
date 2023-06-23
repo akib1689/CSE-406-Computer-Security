@@ -148,30 +148,30 @@ def generate_generator_for_prime(p, set_of_prime_factors):
 #     print(prime_factors, p)
 # print(max_loop_count)
 
-# take the number of digits as input
-n = int(input("Enter the minimum length of p in binary digits: "))
+# # take the number of digits as input
+# n = int(input("Enter the minimum length of p in binary digits: "))
 
-p, prime_factors, loop_count = generate_prime_number(n)
-g = generate_generator_for_prime(p, prime_factors)
-print(p, g)
+# p, prime_factors, loop_count = generate_prime_number(n)
+# g = generate_generator_for_prime(p, prime_factors)
+# print(p, g)
 
-# generate 2 primes a, b with n / 2 bits
-a, prime_factors, loop_count = generate_prime_number(n // 2)
-b, prime_factors, loop_count = generate_prime_number(n // 2)
+# # generate 2 primes a, b with n / 2 bits
+# a, prime_factors, loop_count = generate_prime_number(n // 2)
+# b, prime_factors, loop_count = generate_prime_number(n // 2 + 3)
 
-print(a, b)
+# print(a, b)
 
-# compute A = g ^ a mod p
-A = bin_power(g, a, p)
-# compute B = g ^ b mod p
-B = bin_power(g, b, p)
+# # compute A = g ^ a mod p
+# A = bin_power(g, a, p)
+# # compute B = g ^ b mod p
+# B = bin_power(g, b, p)
 
-print(A, B)
+# print(A, B)
 
-# compute fact_1 = B ^ a mod p
-fact_1 = bin_power(B, a, p)
+# # compute fact_1 = B ^ a mod p
+# fact_1 = bin_power(B, a, p)
 
-# compute fact_2 = A ^ b mod p
-fact_2 = bin_power(A, b, p)
+# # compute fact_2 = A ^ b mod p
+# fact_2 = bin_power(A, b, p)
 
-print(fact_1, fact_2)           # both are equal to g ^ (a * b) mod p
+# print(fact_1, fact_2)           # both are equal to g ^ (a * b) mod p
