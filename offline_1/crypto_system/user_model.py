@@ -63,3 +63,17 @@ class UserModel:
         records.append(record)
         self.write_csv(records)
         return record
+
+    # get a record by username
+    def get_record_by_username(self, username):
+        """
+        this method gets a record by username
+        caller should handle the exception of not existing file
+        returns the record if exists
+                -1 if the record does not exist
+        """
+        records = self.read_csv()
+        for r in records:
+            if r["username"] == username:
+                return r
+        return -1

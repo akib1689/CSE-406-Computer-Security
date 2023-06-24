@@ -20,7 +20,6 @@ class PublicController:
         this method returns the prime number
         """
         prime_number = self.public_model.get_prime_number()
-        print("prime number: ", prime_number)
         return prime_number
 
     def get_primitive_root(self):
@@ -28,7 +27,6 @@ class PublicController:
         this method returns the primitive root
         """
         primitive_root = self.public_model.get_primitive_root()
-        print("primitive root: ", primitive_root)
         return primitive_root
 
     def get_parameters(self):
@@ -44,5 +42,6 @@ class PublicController:
         # return the parameters
         return {
             "p": prime_number,
-            "g": primitive_root
+            "g": primitive_root,
+            "min_len": 128 // 2
         }

@@ -52,7 +52,6 @@ class PublicModel:
 
         # read the file
         lines = file.readlines()
-        print(lines)
 
         # if the file is empty
         if len(lines) == 0:

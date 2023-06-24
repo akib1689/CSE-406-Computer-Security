@@ -26,7 +26,8 @@ GET
 ```json:
 {
     "p": "prime_number",
-    "g": "generator"
+    "g": "generator",
+    "min_len": "minimum private key length",
 }
 ```
 
@@ -68,7 +69,7 @@ POST
 ---
 - Endpoint: <br>
 ```
-/users/get_public_key
+/users/get_user
 ```
 - Method: <br>
 ```

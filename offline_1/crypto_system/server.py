@@ -24,10 +24,10 @@ while True:
 
     # extract the path
     path = clientsocket.recv(1024).decode()
-    path = path.split(" ")[1]
+    print("path: ", path)
 
     # print the path
-    print("path: ", path)
+    # print("path: ", path)
 
     # create the router
     router = Router(clientsocket, path)

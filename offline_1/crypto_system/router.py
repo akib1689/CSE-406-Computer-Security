@@ -47,22 +47,37 @@ class Router:
             </body>\
             </html>"
 
+        # extract the path
+        path_with_query_param = self.path.split(" ")[1]
         # seperate path from the query params
-        path = self.path.split("?")[0]
+        path = path_with_query_param.split("?")[0]
 
         # extract the query params if any
         # check if there are any query params
         query_params = {}
         if len(self.path.split("?")) > 1:
             # extract the query params
-            query_params = self.path.split("?")[1]
+            query_params = path_with_query_param.split("?")[1]
             # split the query params
             query_params = query_params.split("&")
             # create a dictionary
             query_params = dict(
                 map(lambda x: x.split("="), query_params))
 
-        print(query_params)
+        # extract the body if any
+        body = None
+        # check if there is a *{ *}* in the request
+        if len(self.path.split("{")) > 1:
+            # extract the body
+            body = self.path.split("{")[1].split("}")[0]
+            # concate the body with { } to make it a valid json
+            body = "{" + body + "}"
+            # convert the body to a dictionary
+            body = json.loads(body)
+
+        print("path: ", path)
+        print("query params: ", query_params)
+        print("body: ", body)
 
         # if the route is /public/get_parameters
         if path == "/public/get_parameters":
@@ -76,7 +91,7 @@ class Router:
             response = public_controller.get_parameters()
 
             # send the response
-            self.send_json_response(str(response))
+            self.send_json_response(response)
 
         elif path == "/unauth/register":
             # import the unauth controller
@@ -84,11 +99,38 @@ class Router:
 
             # register the user
             response = UnauthController().register(
-                query_params["username"], query_params["public_key"])
+                body["username"], body["public_key"])
 
             # send the response
-            self.send_json_response(str(response))
+            self.send_json_response(response)
 
+        elif path == "/users/get_user":
+            # import the user controller
+            from user_controller import UserController
+
+            # get the user
+            response = UserController().get_user(body["username"])
+
+            # send the response
+            self.send_json_response(response)
+        elif path == "/users/send_message":
+            # import the message controller
+            from message_controller import MessageController
+            # add the message to the message database
+            response = MessageController().send_message(
+                body["sender"], body["receiver"], body["message"])
+
+            # send the response
+            self.send_json_response(response)
+        elif path == "/users/get_messages":
+            # import the message controller
+            from message_controller import MessageController
+            # get the messages
+            response = MessageController().get_user_message(
+                body["username"])
+
+            # send the response
+            self.send_json_response(response)
         else:
             # send a dummy response
             self.send_html_response(dummy_response)
@@ -115,8 +157,7 @@ class Router:
         @param response the response to send
         """
         # convert the response to json
-        json_response = json.dumps(
-            response, sort_keys=True, indent=4, separators=(',', ': '))
+        json_response = json.dumps(response, indent=4)
 
         print(json_response)
         # Send the response headers
@@ -138,7 +179,7 @@ class Router:
         """
         # convert the response to json
         json_response = json.dumps(
-            response, sort_keys=True, indent=4, separators=(',', ': '))
+            response, indent=4)
 
         print(json_response)
         # Send the response headers
