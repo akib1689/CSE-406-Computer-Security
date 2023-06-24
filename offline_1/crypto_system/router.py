@@ -55,7 +55,7 @@ class Router:
         # extract the query params if any
         # check if there are any query params
         query_params = {}
-        if len(self.path.split("?")) > 1:
+        if len(path_with_query_param.split("?")) > 1:
             # extract the query params
             query_params = path_with_query_param.split("?")[1]
             # split the query params
