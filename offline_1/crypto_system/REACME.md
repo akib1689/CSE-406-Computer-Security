@@ -12,11 +12,29 @@ when a user wants to send a message to another user, he/she will send the messag
 
 ## API Endpoints
 
+### Get p and g
+---
+- Endpoint: <br>
+```
+/public/get_parameters
+```
+- Method: <br>
+```
+GET
+```
+- Success Response: <br>
+```json:
+{
+    "p": "prime_number",
+    "g": "generator"
+}
+```
+
 ### Register User
 ---
 - Endpoint: <br>
 ```
-/users/register
+/unauth/register
 ```
 - Method: <br>
 ```
@@ -33,6 +51,10 @@ POST
 ```json:
 {
     "message": "User registered successfully"
+    "user" : {
+        username: "user1",
+        public_key: "public_key"
+    }
 }
 ```
 - Error Response: <br>
