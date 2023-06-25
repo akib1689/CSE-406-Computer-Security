@@ -23,6 +23,10 @@
 
 import requests
 
+from aes.encrypt import *
+
+from diffie_hellman.diff_hellman import generate_prime_number, bin_power
+
 
 # base url of the server
 BASE_URL = 'http://localhost:5086'
@@ -70,15 +74,68 @@ while True:
         # listen for the username
         username = input("Enter your username: ")
 
+        # listen for the private key length
+        private_key_length = int(input("Enter your private key length: "))
+
+        # generate the private key
+        private_key, prime_factors, loop_count = generate_prime_number(
+            private_key_length)
+
+        # generate the public key
+        # calculate g ^ private key mod p
+        public_key = bin_power(g, private_key, p)
+
+        # send the public key to the server
+        request_url = BASE_URL + '/unauth/register'
+
+        # send the username and public key
+        response = requests.post(request_url, json={
+            "username": username,
+            "public_key": public_key
+        }, headers=headers)
+
+        # print the response
+        print(response)
+
+        # extract the response
+        body = response.json()
+
+        print(body)
+
     elif option == "2":
         # get available users
 
         # listen for the username
         user_response = requests.get(
-            BASE_URL + '/users/get_users', headers=headers)
+            BASE_URL + '/users/get_all_users', headers=headers)
 
         # print the response
         print(user_response)
+
+        # extract the response
+        body = user_response.json()
+
+        # the body is in the form of
+        # {
+        #     "users": [
+        #         {
+        #             "username": "user1",
+        #             "public_key": 123
+        #         },
+        #         {
+        #             "username": "user2",
+        #             "public_key": 123
+        #         }
+        #     ]
+        # }
+
+        # extract the users
+        users = body['users']
+
+        # print the username of the users
+        print("Available users: ")
+        for user in users:
+            print("\t", user['username'])
 
     elif option == "3":
         # send a message to a user
@@ -88,6 +145,57 @@ while True:
 
         # listen for the message
         message = input("Enter the message: ")
+
+        # encode the message in to bytes
+        message = message.encode()
+
+        # listen for the private key length
+        private_key_length = int(input("Enter your private key length: "))
+        # generate the private key
+        private_key, prime_factors, loop_count = generate_prime_number(
+            private_key_length)
+
+        # generate the public key
+
+        # get the public key of the receiver
+        request_url = BASE_URL + '/users/get_user'
+        response = requests.get(request_url, json={
+            "username": receiver
+        }, headers=headers)
+
+        # print the response
+        print(response)
+
+        # extract the response
+        body = response.json()
+
+        # extract the public key
+        public_key = body['public_key']
+
+        # generate the shared key
+        # calculate public key ^ private key mod p
+        shared_key = bin_power(public_key, private_key, p)
+
+        # encrypt the message using the shared key
+        encrypted_message = encrypt(message, shared_key)
+
+        # send the encrypted message to the server
+        request_url = BASE_URL + '/users/send_message'
+
+        # send the username and public key
+        response = requests.post(request_url, json={
+            "sender": username,
+            "receiver": receiver,
+            "message": encrypted_message
+        }, headers=headers)
+
+        # print the response
+        print(response)
+
+        if response.status_code == 200:
+            print("Message sent successfully")
+        else:
+            print("Message sending failed")
 
     elif option == "4":
         # get messages

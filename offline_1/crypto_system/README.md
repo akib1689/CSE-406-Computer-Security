@@ -12,6 +12,18 @@ when a user wants to send a message to another user, he/she will send the messag
 
 ## API Endpoints
 
+List of available endpoints:
+
+| Endpoint | Method | Description | Quick Link |
+| --- | --- | --- | --- |
+| `/public/get_parameters` | `GET` | Get p and g | [Link](#get-p-and-g) |
+| `/unauth/register` | `POST` | Register User | [Link](#register-user) |
+| `/users/get_user` | `GET` | Get User | [Link](#get-user) |
+| `/users/get_all_users` | `GET` | Get All Users | [Link](#get-all-users) |
+| `/users/send_message` | `POST` | Send Message | [Link](#send-message) |
+| `/users/get_message` | `GET` | Get Message | [Link](#get-message) |
+
+
 ### Get p and g
 ---
 - Endpoint: <br>
@@ -65,7 +77,7 @@ POST
 }
 ```
 
-### Get Public Key
+### Get User
 ---
 - Endpoint: <br>
 ```
@@ -92,6 +104,34 @@ GET
 ```json:
 {
     "message": "User does not exist"
+}
+```
+
+### Get All Users
+---
+- Endpoint: <br>
+```
+/users/get_all_users
+```
+
+- Method: <br>
+```
+GET
+```
+
+- Success Response: <br>
+```json:
+{
+    "users": [
+        {
+            "username": "user1",
+            "public_key": "public_key"
+        },
+        {
+            "username": "user2",
+            "public_key": "public_key"
+        }
+    ]
 }
 ```
 

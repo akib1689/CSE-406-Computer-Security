@@ -20,7 +20,7 @@ Steps:
 """
 
 # s-box
-from aes.s_box import sbox
+from s_box import sbox
 
 # rconst
 rconst = 0x01000000

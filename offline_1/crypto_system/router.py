@@ -113,6 +113,17 @@ class Router:
 
             # send the response
             self.send_json_response(response)
+
+        elif path == "/users/get_all_users":
+            # import the user controller
+            from user_controller import UserController
+            response = UserController().get_all_users()
+
+            # send the response
+            response = {
+                "users": response
+            }
+            self.send_json_response(response)
         elif path == "/users/send_message":
             # import the message controller
             from message_controller import MessageController

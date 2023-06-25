@@ -6,13 +6,13 @@
 #   1. cipher: the encrypted text
 
 # import the key expansion file
-from aes.key_expansion import get_round_key
+from key_expansion import get_round_key
 
 # import bitvector operations
 from BitVector import *
 
 # s-box
-from aes.s_box import *
+from s_box import *
 
 # time
 import time

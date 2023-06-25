@@ -10,8 +10,10 @@ echo -e "plain Text(in Hex)\tplain Text(in ASCII)\tkey(in Hex)\tkey(in ASCII)\tC
 while read line1 && read line2 <&3; do
 
     # store line1 and line2 in temp.txt
-    echo -e "$line1\t$line2" > temp.txt
+    echo -e "$line1\n$line2" > temp.txt
     python3 aes-demo.py >> aes-128.txt < temp.txt
-
     # remove temp.txt
+    rm temp.txt
+
+    echo "--------------------------------------------------">> aes-128.txt
 done < plaintext.txt 3< keys.txt

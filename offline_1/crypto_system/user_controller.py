@@ -28,7 +28,7 @@ class UserController:
         else:
             return user
 
-    def get_users(self):
+    def get_all_users(self):
         """
         this method returns all users
         """
