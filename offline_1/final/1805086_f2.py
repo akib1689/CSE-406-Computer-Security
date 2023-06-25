@@ -100,5 +100,5 @@ for plain in message_block:
     while plain > 0:
         plaintext = chr(plain & 0xff) + plaintext
         plain >>= 8
-
+print("-----------------------------------")
 print("The decrypted message is: " + plaintext)

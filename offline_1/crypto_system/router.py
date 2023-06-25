@@ -141,6 +141,10 @@ class Router:
                 body["username"])
 
             # send the response
+            response = {
+                "messages": response
+            }
+            # send the response
             self.send_json_response(response)
         else:
             # send a dummy response

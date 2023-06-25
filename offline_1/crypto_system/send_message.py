@@ -59,6 +59,9 @@ print("p: ", p)
 print("g: ", g)
 print("min_length: ", min_length)
 
+# listen for the username
+username = input("Enter your username: ")
+
 
 while True:
     # give options
@@ -147,7 +150,7 @@ while True:
         message = input("Enter the message: ")
 
         # encode the message in to bytes
-        message = message.encode()
+        message = int(message.encode('ascii').hex(), 16)
 
         # listen for the private key length
         private_key_length = int(input("Enter your private key length: "))
@@ -172,12 +175,15 @@ while True:
         # extract the public key
         public_key = body['public_key']
 
+        # convert the public key to int
+        public_key = int(public_key)
+
         # generate the shared key
         # calculate public key ^ private key mod p
         shared_key = bin_power(public_key, private_key, p)
 
         # encrypt the message using the shared key
-        encrypted_message = encrypt(message, shared_key)
+        encrypted_message, _ = encrypt(message, shared_key)
 
         # send the encrypted message to the server
         request_url = BASE_URL + '/users/send_message'
@@ -200,11 +206,29 @@ while True:
     elif option == "4":
         # get messages
 
-        # listen for the sender
-        sender = input("Enter the sender: ")
+        # request the messages
+        request_url = BASE_URL + '/users/get_messages'
+        response = requests.get(request_url, json={
+            "username": username
+        }, headers=headers)
 
-        # listen for the receiver
-        receiver = input("Enter the receiver: ")
+        # print the response
+        print(response)
+
+        # extract the response
+        body = response.json()
+
+        # extract the messages
+        messages = body['messages']
+
+        # print the messages
+        print("Messages: ")
+        for message in messages:
+            # print the sender and receiver
+            print("\t", message['sender'], "-> ", end="")
+            print(message['receiver'], ": ", end="")
+            # print the message
+            print(message['message'])
 
     elif option == "5":
         # exit
