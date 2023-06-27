@@ -9,8 +9,12 @@ import random
 
 from diff_hellman import generate_prime_number, generate_generator_for_prime, bin_power
 
-from encrypt import encrypt, decrypt
+from encrypt import encrypt
 
+from file_process import file_to_binary
+
+# take the file name as input from the user
+file_name = input("Enter the file name to send: ")
 
 # create a socket object
 serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -48,10 +52,12 @@ A = bin_power(g, a, p)
 print("g ^ a mod p = " + str(A))
 # send p, g, and g ^ a mod p to bob
 
+# encode file name in an integer
+file_name_int = int(file_name.encode("utf-8").hex(), 16)
+
 # concate p, g, and g ^ a mod p with commas
 # and send it to bob
-
-message = str(p) + "," + str(g) + "," + str(A)
+message = str(p) + "," + str(g) + "," + str(A) + "," + str(file_name_int)
 clientsocket.send(bytes(message, 'utf-8'))
 
 
@@ -59,38 +65,46 @@ clientsocket.send(bytes(message, 'utf-8'))
 B = int(clientsocket.recv(1024).decode('utf-8'))
 
 # calculate the shared secret
-
 shared_secret = bin_power(B, a, p)
 
 print("The shared secret is: " + str(shared_secret))
 
+# data is an integer
+data = file_to_binary(file_name)
 
-# encrypt the message in the story.txt file
+# print("The data is: ")
+# print(hex(data))
 
-# open the file and read the contents
-file = open('story.txt', 'r')
-text = file.read()
-file.close()
 
-text_blocks = []
-if len(text) > 16:
-    while len(text) > 16:
-        text_blocks.append(text[:16])
-        text = text[16:]
-    text_blocks.append(text)
-elif len(text) < 16:
-    text = text + "\x00" * (16 - len(text))
-    text_blocks.append(text)
+# divide the data into blocks of 16 bytes
+data_blocks = []
+if data > 128:
+    while data > 128:
+        data_blocks.append(data & 0xffffffffffffffffffffffffffffffff)
+        data >>= 128
+
+    # pad the data with 0s
+    data = data << (128 - data.bit_length())
+    data_blocks.append(data)
+elif data < 128:
+    # pad the data with 0s
+    data = data << (128 - data.bit_length())
+    data_blocks.append(data)
 else:
-    text_blocks.append(text)
+    data_blocks.append(data)
 
-# print("blocks:", text_blocks)
+# reverse the data blocks
+data_blocks.reverse()
+# print("The data blocks are: ")
+# for block in data_blocks:
+#     print(hex(block))
 # encrypt each block
 ciphertext = []
 key_expansion_time = 0
-for block in text_blocks:
+for block in data_blocks:
     # convert the block to integer
-    block_bytes = int(block.encode("ascii").hex(), 16)
+    # block_bytes = int(block.encode("utf-8").hex(), 16)
+    block_bytes = block
     # encrypt the block
     cipher, key_expansion_time = encrypt(block_bytes, shared_secret)
     # # append the cipher to the ciphertext
@@ -105,24 +119,12 @@ for cipher in ciphertext:
     ciphertext_int <<= 128
     ciphertext_int += cipher
 
-encrypted_message = ciphertext_int
-
-# print the ciphertext as hex and in ascii
-# print("Ciphertext:")
-# print("\tin Hex:", hex(ciphertext_int))
-# # take the 2 hex digits at a time and convert them to ascii
-# cipher_text_ascii = ""
-# while ciphertext_int > 0:
-#     cipher_text_ascii = chr(ciphertext_int & 0xff) + cipher_text_ascii
-#     ciphertext_int >>= 8
-# print("\tin ASCII:", cipher_text_ascii)
-
-
-# print the encrypted message
-print("The encrypted message is: ", hex(encrypted_message))
+print("the encrypted message is generated")
 
 # send the encrypted message to bob
-clientsocket.sendall(bytes(str(encrypted_message), 'ascii'))
+clientsocket.sendall(bytes(str(ciphertext_int), 'utf-8'))
+print("the encrypted message is sent")
 
 # close the socket
 serversocket.close()
+print("the connection is closed")
